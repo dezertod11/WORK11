@@ -1,0 +1,43 @@
+1. Идеальная передача обеспечивает:
+	один вариант кода для разных типов параметров - const &, & и &&.
+
+Реализация:
+template<typename T>
+void f(T && arg) {
+g(std::forward<T>(arg));
+}
+
+
+2. Пробрасывающая или универсальная ссылка - T && (слева от && - тип, выбираемый
+компилятором). Ещё пример - auto &&.
+
+3. Идиома SFINAE применительно к шаблонам заключается в том, что шаблон, который
+не может быть скомпилирован, не будет являться ошибкой, если существует подходящая
+нешаблонная структура.
+
+4. enable_if позволяет проверить условие и сделать подстановку типа в случае true,
+а в случае false шаблон не инстанцируется.
+
+
+5. Правила вывода:
+Рассмотрим шаблонную функцию:
+template <typename T>
+void f(T & arg) {}
+
+Если запустим функцию от:	То T будет: 	arg будет иметь тип:
+
+int				T = int		arg - int&
+const int			T = const int	arg - const int &
+const int &			T = const int	arg - const int &
+
+Рассмотрим функцию 
+template <typename T>
+void f(T && arg) {}
+
+Если запустим функцию от:	То T будет: 	arg будет иметь тип:
+
+int				T = int&	arg - int& && = int&
+const int			T = const int&	arg - const int &
+const int &			T = const int&	arg - const int &
+1				T = int		arg - int &&
+std::move(x)			T = int &&	arg - int && && = int &&
